@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood Recipe Recommender</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        .mood-button {
+            transition: all 0.3s ease;
+        }
+        .mood-button:hover {
+            transform: scale(1.05);
+        }
+        .mood-button.selected {
+            transform: scale(1.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <header class="text-center mb-12 fade-in">
+            <h1 class="text-5xl font-bold text-gray-800 mb-3">🍳 Mood Recipe Recommender</h1>
+            <p class="text-gray-600 text-lg">Let your mood guide your next meal!</p>
+        </header>
+
+        <!-- Mood Selection Section -->
+        <div id="mood-section" class="bg-white rounded-2xl shadow-xl p-8 mb-8 fade-in">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">How are you feeling today?</h2>
+            <div id="mood-buttons" class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <!-- Mood buttons will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loading" class="hidden text-center py-8">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+            <p class="mt-4 text-gray-600">Finding the perfect recipe for you...</p>
+        </div>
+
+        <!-- Recipe Display Section -->
+        <div id="recipe-section" class="hidden bg-white rounded-2xl shadow-xl p-8 fade-in">
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <h2 id="recipe-name" class="text-3xl font-bold text-gray-800 mb-2"></h2>
+                    <div class="flex gap-4 text-sm text-gray-600">
+                        <span id="recipe-time" class="flex items-center">
+                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </span>
+                        <span id="recipe-difficulty" class="flex items-center">
+                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+                <button onclick="changeMood()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition-colors duration-200 text-sm font-medium">
+                    Change Mood
+                </button>
+            </div>
+
+            <!-- Ingredients -->
+            <div class="mb-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-3 flex items-center">
+                    <svg class="w-6 h-6 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                    Ingredients
+                </h3>
+                <ul id="recipe-ingredients" class="space-y-2">
+                    <!-- Ingredients will be inserted here -->
+                </ul>
+            </div>
+
+            <!-- Instructions -->
+            <div class="mb-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-3 flex items-center">
+                    <svg class="w-6 h-6 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Instructions
+                </h3>
+                <div id="recipe-instructions" class="text-gray-700 whitespace-pre-line leading-relaxed">
+                    <!-- Instructions will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-4 justify-center mt-8">
+                <button onclick="getNewRecipe()" class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200 shadow-md hover:shadow-lg flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    Try Another Recipe
+                </button>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="error-section" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg text-center">
+            <p id="error-message"></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
